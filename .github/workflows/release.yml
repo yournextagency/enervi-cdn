@@ -31,7 +31,7 @@ jobs:
           
           # Get branch-specific tags
           branch_name=${{ env.branch_name }}
-          tag_prefix="@${branch_name}/v"
+          tag_prefix="@${branch_name}-v"
           latest_tag=$(git tag --list "${tag_prefix}*" | sort -V | tail -n 1)
           
           if [ -z "$latest_tag" ]; then
@@ -54,7 +54,7 @@ jobs:
           tag_name: ${{ env.tag }}
           release_name: ${{ env.tag }}
           body: |
-            A new release has been created for ${GITHUB_REF#refs/heads/}.
+            "A new release has been created for ${{ env.branch_name }}".
           draft: false
           prerelease: false
         env:
