@@ -16,15 +16,20 @@ jobs:
       - name: Fetch Release Info
         id: get_release
         run: |
-          # Get the latest tag
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          if [ ! -z "$latest_tag" ]; then
-            echo "Latest tag found: $latest_tag"
-          else
-            echo "No latest tag found, setting default version v1.0.0"
+          # Fetch all tags
+          git fetch --tags
+          
+          # Get the latest tag (if available)
+          latest_tag=$(git tag --list | sort -V | tail -n 1)
+          
+          if [ -z "$latest_tag" ]; then
+            echo "No tags found, defaulting to v1.0.0"
             latest_tag="v1.0.0"
+          else
+            echo "Latest tag found: $latest_tag"
           fi
-          # Extract the version and increment it (simple patch example)
+          
+          # Increment version (bump patch version)
           version=$(echo $latest_tag | sed 's/^v//' | awk -F. '{ printf("v%d.%d.%d", $1, $2, $3+1) }')
           echo "Next version: $version"
           echo "version=$version" >> $GITHUB_ENV
