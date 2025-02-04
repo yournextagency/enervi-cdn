@@ -34,7 +34,7 @@ jobs:
           if [ "$branch_name" = "release-main" ]; then
             tag_prefix="v"
           else
-            tag_prefix="@${branch_name}-v"
+            tag_prefix="${branch_name}-"
           fi
 
           # Get branch-specific tags based on the prefix
