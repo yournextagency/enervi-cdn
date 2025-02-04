@@ -29,9 +29,15 @@ jobs:
           # Fetch all tags
           git fetch --tags
           
-          # Get branch-specific tags
+          # Conditional logic for tag prefix
           branch_name=${{ env.branch_name }}
-          tag_prefix="@${branch_name}-v"
+          if [ "$branch_name" = "release-main" ]; then
+            tag_prefix="v"
+          else
+            tag_prefix="@${branch_name}-v"
+          fi
+
+          # Get branch-specific tags based on the prefix
           latest_tag=$(git tag --list "${tag_prefix}*" | sort -V | tail -n 1)
           
           if [ -z "$latest_tag" ]; then
