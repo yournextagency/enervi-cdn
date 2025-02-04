@@ -3,8 +3,10 @@ name: Auto Increment Release
 on:
   push:
     branches:
-      - 'master'
-      - 'release'
+      - 'release-main'
+      - 'release-beta'
+      - 'release-staging'
+      - 'release-EV-196-CDN-deploy'
 
 jobs:
   release:
@@ -13,35 +15,46 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Get Branch Name
+        id: get_branch_name
+        run: |
+          # Extract branch name from GITHUB_REF
+          branch_name=$(echo "${GITHUB_REF#refs/heads/}")
+          echo "branch_name=${branch_name}" >> $GITHUB_ENV
+          echo "Branch name: ${branch_name}"
+
       - name: Fetch Release Info
         id: get_release
         run: |
           # Fetch all tags
           git fetch --tags
           
-          # Get the latest tag (if available)
-          latest_tag=$(git tag --list | sort -V | tail -n 1)
+          # Get branch-specific tags
+          branch_name=${{ env.branch_name }}
+          tag_prefix="@${branch_name}/v"
+          latest_tag=$(git tag --list "${tag_prefix}*" | sort -V | tail -n 1)
           
           if [ -z "$latest_tag" ]; then
-            echo "No tags found, defaulting to v1.0.0"
-            latest_tag="v1.0.0"
+            echo "No tags found for branch '${branch_name}', defaulting to ${tag_prefix}1.0.0"
+            latest_tag="${tag_prefix}1.0.0"
           else
-            echo "Latest tag found: $latest_tag"
+            echo "Latest tag found for branch '${branch_name}': $latest_tag"
           fi
           
-          # Increment version (bump patch version)
-          version=$(echo $latest_tag | sed 's/^v//' | awk -F. '{ printf("v%d.%d.%d", $1, $2, $3+1) }')
-          echo "Next version: $version"
-          echo "version=$version" >> $GITHUB_ENV
+          # Extract version number and increment patch version
+          version=$(echo $latest_tag | sed 's/^.*v//' | awk -F. '{ printf("%d.%d.%d", $1, $2, $3+1) }')
+          new_tag="${tag_prefix}${version}"
+          echo "Next tag: $new_tag"
+          echo "tag=${new_tag}" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ env.version }}
-          release_name: ${{ env.version }}
+          tag_name: ${{ env.tag }}
+          release_name: ${{ env.tag }}
           body: |
-            A new release has been created for version ${{ env.version }}.
+            A new release has been created for ${GITHUB_REF#refs/heads/}.
           draft: false
           prerelease: false
         env:
