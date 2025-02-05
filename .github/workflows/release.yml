@@ -6,7 +6,7 @@ on:
       - 'release-main'
       - 'release-beta'
       - 'release-staging'
-      - 'release-EV-196-CDN-deploy'
+      - 'release-test'
 
 jobs:
   release:
