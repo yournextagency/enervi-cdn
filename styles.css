@@ -1,0 +1,39 @@
+header {
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+}
+
+footer {
+  padding: 30px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
+.links {
+  display: flex;
+  gap: 30px;
+}
+
+.code {
+  font-size: 12px;
+  background-color: #ccc;
+  margin: 10px 20px;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.code p {
+  padding: 0;
+}
+
+p {
+  padding: 10px 30px;
+}
+
+.status {
+  min-width: 25px;
+  min-height: 20px;
+  border: 1px solid red;
+}
