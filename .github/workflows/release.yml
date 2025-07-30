@@ -65,3 +65,8 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Purge jsDelivr Cache
+        run: |
+          curl -X GET "https://purge.jsdelivr.net/gh/yournextagency/enervi-cdn@release-test/index.css"
+          curl -X GET "https://purge.jsdelivr.net/gh/yournextagency/enervi-cdn@release-test/index.js"
